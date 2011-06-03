@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" manifest="cache.manifest">
+<head>
+	<meta charset="UTF-8">
+	<title>Load More</title>
+	<meta name="Description" content="">
+	<meta name="Keywords" content="">
+	<meta name="author" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="default">
+	<link rel="start" href="/" title="TOP">
+	<link rel="apple-touch-icon" href="apple-touch-icon.png">
+	<link rel="stylesheet" href="css/smartphone.css" media="screen">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+	<script>
+	$(document).ready(function() {
+		var totalSize = 0;
+		var seqNo = 0;
+		function randStr() {
+			seqNo++;
+			return (new Date()).getTime() + '' + seqNo;
+		}
+		function convertSize(size) {
+			if(!size) {
+				return '0 Bytes';
+			}
+			var sizeNames = [' Bytes', ' KB', ' MB', ' GB', ' TB', ' PB', ' EB', ' ZB', ' YB'];
+			var i = Math.floor(Math.log(size)/Math.log(1024));
+			return (size/Math.pow(1024, Math.floor(i))).toFixed(2)+" "+sizeNames[i];
+		}
+		function loadMore() {
+			$('#loading').show();
+			$.get('php/booklist.php', function(itemList) {
+				$('#loading').hide();
+				for(var i=0, len=itemList.length; i<len; i++) {
+					var item = itemList[i];
+					$('#booklist').append('<li class="bookitem"><img src="' + item.image + '?' + randStr() + '" />' + item.text + '</li>');
+					totalSize += item.size;
+				}
+				$('#totalsize').html(convertSize(totalSize));
+			}, 'json');
+		}
+		$('#morebooks').click(function() {
+			loadMore();
+		});
+
+		$('#loading').hide();
+		loadMore();
+	});
+	</script>
+</head>
+<body>
+
+<header class="toolbar">
+	<hgroup>
+		<h1>Load More</h1>
+		<h2>Ver 1.0</h2>
+	</hgroup>
+</header>
+
+<div id="content">
+	<ul id="booklist" class="listbox rounded">
+	</ul>
+</div>
+
+<a name="more" />
+<footer>
+	<div id="loading" class="center">
+		<img src="img/ajax-loader2.gif" />
+	</div>
+	<h2>総サイズ: <span id="totalsize">0 Bytes</span></h2>
+	<div class="center">
+		<a id="morebooks" class="btn_round" href="#more"><span style="width:200px;">もと見る</span></a>
+	</div>
+	<p class="copyright"><small>Copyright &copy; Jlake Ou All Rights Reserved.</small></p>
+</footer>
+
+<noscript>
+	<p class="topalert">Please enable JavaScript in your browser.</p>
+</noscript>
+
+</body>
+</html>
